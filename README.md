@@ -76,7 +76,7 @@ catch(err) {
 }
 ```
 
-### createCallsiteRecord({ byFunctionName, typeName }) → CallsiteRecord
+### createCallsiteRecord({ byFunctionName, typeName, processFrameFn }) → CallsiteRecord
 
 Creates `CallsiteRecord` for the function up in the call stack specified by `byFunctionName`. You can optionally specify a
 `typeName` if the function is a method. If the function is a constructor set `byFunctionName` to `constructor`.
@@ -89,6 +89,23 @@ const createCallsiteRecord = require('callsite-record');
     (function func2() {
         (function func3() {
             const record = createCallsiteRecord({ byFunctionName: 'func2' });
+        })();
+    })();
+})();
+```
+
+You can specify `processFrameFn` function, which will process every frame in callstack. It's usefull when you need to 
+enable frame processing like `source-maps-support` or something other.
+
+*Example:*
+```js
+const createCallsiteRecord = require('callsite-record');
+const wrapCallSite         = require('source-map-support').wrapCallSite;
+
+(function func1() {
+    (function func2() {
+        (function func3() {
+            const record = createCallsiteRecord({ byFunctionName: 'func2', processFrameFn: wrapCallSite });
         })();
     })();
 })();
